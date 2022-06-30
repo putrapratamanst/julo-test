@@ -1,5 +1,9 @@
 package account
 
+import (
+	"julo-test/model/account"
+)
+
 type IAccountRepository interface {
-	GetPlayerByName() bool
+	Insert(model *account.Init)
 }

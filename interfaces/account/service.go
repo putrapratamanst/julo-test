@@ -6,5 +6,5 @@ import (
 )
 
 type IAccountService interface {
-	Init(input *model.Init) *presenter.Response
+	CreateUser(input model.Init) *presenter.Response
 }

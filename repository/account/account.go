@@ -1,18 +1,23 @@
 package repository
 
-import "cloud.google.com/go/firestore"
+import (
+	"context"
+	"julo-test/infrastructure"
+	"julo-test/model/account"
+)
 
 type AccountRepository struct {
-	db *firestore.Client
+	rc *infrastructure.RedisCache
 }
 
 //Account new repository
-func NewRepository(db *firestore.Client) *AccountRepository {
+func NewRepository(rc *infrastructure.RedisCache) *AccountRepository {
 	return &AccountRepository{
-		db: db,
+		rc: rc,
 	}
 }
 
-func (repository *AccountRepository) GetPlayerByName() bool {
-	return false
+func (repository *AccountRepository) Insert(model *account.Init) {
+	context := context.Background()
+	repository.rc.Client.Set(context, "account:"+model.CustomerXID, model.Token, 0)
 }

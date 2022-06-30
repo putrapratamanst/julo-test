@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"julo-test/infrastructure"
 	"julo-test/pkg"
@@ -19,21 +18,25 @@ import (
 func main() {
 	// gin.SetMode(gin.ReleaseMode)
 	godotenv.Load()
-	ctx := context.Background()
 	serverHost := os.Getenv("SERVER_ADDRESS")
 	serverPort := os.Getenv("SERVER_PORT_PRODUCT")
 	serverString := fmt.Sprintf("%s:%s", serverHost, serverPort)
-	fmt.Println("Listening Product API ...", serverString)
+	fmt.Println("Listening MINI WALLET API ...", serverString)
 
 	r := gin.Default()
-	client, err := infrastructure.CreateClient(ctx)
-	if err != nil {
-		panic("Cannot create client firestore: " + err.Error())
+	// client, err := infrastructure.CreateClient(ctx)
+	// if err != nil {
+	// 	panic("Cannot create client firestore: " + err.Error())
+	// }
+	// defer client.Close()
+
+	redisConfig := fmt.Sprintf("%s:%s", os.Getenv("REDIS_HOST"), os.Getenv("REDIS_PORT"))
+	redisCache, errRedis := infrastructure.NewDatabase(redisConfig, os.Getenv("REDIS_PASSWORD"), os.Getenv("REDIS_DB"))
+	if errRedis != nil {
+		panic(errRedis.Error())
 	}
 
-	defer client.Close()
-
-	repoAccount := repository.NewRepository(client)
+	repoAccount := repository.NewRepository(redisCache)
 	serviceAccount := service.NewService(repoAccount)
 
 	v1 := r.Group("/api/v1")

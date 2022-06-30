@@ -3,28 +3,31 @@ package account
 import (
 	"julo-test/model/account"
 	"julo-test/pkg"
-	"julo-test/pkg/response"
 	"julo-test/presenter"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func (handler *AccountController) Init(ctx *gin.Context) {
 	var input account.Init
-	err := ValidateRequest(pkg.BIND_TYPE_PARAM, ctx, &input)
+	err := ValidateRequest(pkg.BIND_TYPE_JSON, ctx, &input)
 	if err != nil {
 		result := presenter.Response{
-			Code:    err.Code,
+			Status:  pkg.HTTP_STATUS_FAIL,
 			Message: err.Message,
+			Data:    nil,
 		}
-		response.Response(ctx, &result)
+		ctx.JSON(err.Code, result)
 		return
 	}
 
+	handler.ias.CreateUser(&input)
 	result := presenter.Response{
 		Status: pkg.HTTP_STATUS_SUCCESS,
-		Data:   nil,
+		Data: presenter.InitResponse{
+			Token: input.Token,
+		},
 	}
-	response.Response(ctx, &result)
-
+	ctx.JSON(http.StatusOK, result)
 }
