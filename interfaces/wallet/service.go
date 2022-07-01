@@ -9,4 +9,5 @@ type IWalletService interface {
 	EnableWalletService(model wallet.WalletModel) *presenter.Response
 	CheckWalletService(cid string) bool
 	ViewWalletService(cid string) (wallet.WalletModel, *presenter.Response)
+	DisableWalletService(cid string)
 }

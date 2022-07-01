@@ -81,11 +81,79 @@ func (handler *WalletController) View(ctx *gin.Context) {
 		return
 	}
 
+	if detail.Status == pkg.WALLET_DISABLED {
+		result := presenter.Response{
+			Status: pkg.HTTP_STATUS_FAIL,
+			Data: presenter.ErrorResponseMessage{
+				Error: pkg.ErrWalletAlreadyDisabled.Error(),
+			},
+		}
+		ctx.JSON(http.StatusNotFound, result)
+		return
+	}
+
 	result := presenter.Response{
 		Status: pkg.HTTP_STATUS_SUCCESS,
 		Data: walletResponse.EnableResponse{
 			Wallet: detail,
 		},
 	}
-	ctx.JSON(http.StatusCreated, result)
+	ctx.JSON(http.StatusOK, result)
+}
+
+func (handler *WalletController) Disable(ctx *gin.Context) {
+	cid, errCid := ctx.Get("customer_xid")
+	if !errCid {
+		result := presenter.Response{
+			Status: pkg.HTTP_STATUS_FAIL,
+			Data: presenter.ErrorResponseMessage{
+				Error: pkg.ErrCustomerXID.Error(),
+			},
+		}
+		ctx.JSON(http.StatusBadRequest, result)
+		return
+	}
+
+	var input wallet.DisableModel
+	err := ValidateRequest(pkg.BIND_TYPE_JSON, ctx, &input)
+	if err != nil {
+		result := presenter.Response{
+			Status:  pkg.HTTP_STATUS_FAIL,
+			Message: err.Message,
+			Data:    nil,
+		}
+		ctx.JSON(err.Code, result)
+		return
+	}
+
+	detail, errDetail := handler.iws.ViewWalletService(cid.(string))
+	if errDetail != nil {
+		result := presenter.Response{
+			Status: pkg.HTTP_STATUS_FAIL,
+			Data: presenter.ErrorResponseMessage{
+				Error: errDetail.Message,
+			},
+		}
+		ctx.JSON(http.StatusBadRequest, result)
+		return
+	}
+
+	timeNow := time.Now()
+	detail.Status = pkg.WALLET_DISABLED
+	detail.DisabledAt = &timeNow
+
+	handler.iws.DisableWalletService(detail)
+	result := presenter.Response{
+		Status: pkg.HTTP_STATUS_SUCCESS,
+		Data: walletResponse.EnableResponse{
+			Wallet: wallet.WalletModel{
+				ID:         detail.ID,
+				OwnedBy:    detail.OwnedBy,
+				Status:     detail.Status,
+				DisabledAt: detail.DisabledAt,
+				Balance:    detail.Balance,
+			},
+		},
+	}
+	ctx.JSON(http.StatusOK, result)
 }

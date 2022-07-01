@@ -31,3 +31,9 @@ func (repository *WalletRepository) Get(cid string) string {
 	data, _ := repository.rc.Client.Get(context, dataKey).Result()
 	return data
 }
+
+func (repository *WalletRepository) Disable(model wallet.WalletModel) {
+	context := context.Background()
+	setValue, _ := json.Marshal(model)
+	repository.rc.Client.Set(context, "wallet:"+model.OwnedBy, setValue, 0)
+}

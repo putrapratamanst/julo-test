@@ -7,4 +7,5 @@ import (
 type IWalletRepository interface {
 	Enable(model wallet.WalletModel)
 	Get(cid string) string
+	Disable(model wallet.WalletModel)
 }

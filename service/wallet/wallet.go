@@ -49,11 +49,10 @@ func (s *Service) ViewWalletService(cid string) (wallet.WalletModel, *presenter.
 	}
 
 	json.Unmarshal([]byte(check), &data)
-	if data.Status == pkg.WALLET_DISABLED {
-		return data, &presenter.Response{
-			Message: pkg.ErrWalletAlreadyDisabled.Error(),
-		}
-	}
-
 	return data, nil
+}
+
+func (s *Service) DisableWalletService(model wallet.WalletModel) {
+	s.repo.Disable(model)
+
 }

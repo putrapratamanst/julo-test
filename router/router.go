@@ -24,5 +24,6 @@ func RouteWallet(v1 *gin.RouterGroup, iws *wallet.Service, ias *account.Service)
 	{
 		wallet.POST("", middleware.AuthUser(ias), handler.Enable)
 		wallet.GET("", middleware.AuthUser(ias), handler.View)
+		wallet.PATCH("", middleware.AuthUser(ias), handler.Disable)
 	}
 }
