@@ -5,9 +5,11 @@ import (
 	"julo-test/infrastructure"
 	"julo-test/pkg"
 	"julo-test/presenter"
-	repository "julo-test/repository/account"
+	repositoryAccount "julo-test/repository/account"
+	repositoryWallet "julo-test/repository/wallet"
 	"julo-test/router"
-	service "julo-test/service/account"
+	serviceAccount "julo-test/service/account"
+	serviceWallet "julo-test/service/wallet"
 	"net/http"
 	"os"
 
@@ -36,12 +38,16 @@ func main() {
 		panic(errRedis.Error())
 	}
 
-	repoAccount := repository.NewRepository(redisCache)
-	serviceAccount := service.NewService(repoAccount)
+	repoAccount := repositoryAccount.NewRepository(redisCache)
+	serviceAccount := serviceAccount.NewService(repoAccount)
+
+	repoWallet := repositoryWallet.NewRepository(redisCache)
+	serviceWallet := serviceWallet.NewService(repoWallet)
 
 	v1 := r.Group("/api/v1")
 	{
 		router.RouteAccount(v1, serviceAccount)
+		router.RouteWallet(v1, serviceWallet, serviceAccount)
 	}
 
 	errorHandler(r)

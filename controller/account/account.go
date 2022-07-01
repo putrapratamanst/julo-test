@@ -4,6 +4,7 @@ import (
 	"julo-test/model/account"
 	"julo-test/pkg"
 	"julo-test/presenter"
+	accountResponse "julo-test/presenter/account"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,12 +23,12 @@ func (handler *AccountController) Init(ctx *gin.Context) {
 		return
 	}
 
-	handler.ias.CreateUser(&input)
+	handler.ias.CreateUserService(&input)
 	result := presenter.Response{
 		Status: pkg.HTTP_STATUS_SUCCESS,
-		Data: presenter.InitResponse{
+		Data: accountResponse.InitResponse{
 			Token: input.Token,
 		},
 	}
-	ctx.JSON(http.StatusOK, result)
+	ctx.JSON(http.StatusCreated, result)
 }

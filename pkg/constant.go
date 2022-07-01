@@ -8,4 +8,7 @@ const (
 	HTTP_STATUS_SUCCESS = "success"
 	HTTP_STATUS_ERROR   = "error"
 	HTTP_STATUS_FAIL    = "fail"
+
+	WALLET_ENABLED = "enabled"
+	WALLET_DISABLED = "disabled"
 )
