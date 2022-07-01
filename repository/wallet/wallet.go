@@ -22,7 +22,7 @@ func NewRepository(rc *infrastructure.RedisCache) *WalletRepository {
 func (repository *WalletRepository) Enable(model wallet.WalletModel) {
 	context := context.Background()
 	setValue, _ := json.Marshal(model)
-	repository.rc.Client.Set(context, "wallet:"+model.CustomerXID, setValue, 0)
+	repository.rc.Client.Set(context, "wallet:"+model.OwnedBy, setValue, 0)
 }
 
 func (repository *WalletRepository) Get(cid string) string {

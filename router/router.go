@@ -23,5 +23,6 @@ func RouteWallet(v1 *gin.RouterGroup, iws *wallet.Service, ias *account.Service)
 	wallet := v1.Group("/wallet")
 	{
 		wallet.POST("", middleware.AuthUser(ias), handler.Enable)
+		wallet.GET("", middleware.AuthUser(ias), handler.View)
 	}
 }

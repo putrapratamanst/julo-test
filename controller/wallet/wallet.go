@@ -39,12 +39,11 @@ func (handler *WalletController) Enable(ctx *gin.Context) {
 
 	timeNow := time.Now()
 	dataWallet := wallet.WalletModel{
-		ID:          pkg.GenID(),
-		OwnedBy:     cid.(string),
-		EnableAt:    &timeNow,
-		Status:      pkg.WALLET_ENABLED,
-		Balance:     balance,
-		CustomerXID: cid.(string),
+		ID:       pkg.GenID(),
+		OwnedBy:  cid.(string),
+		EnableAt: &timeNow,
+		Status:   pkg.WALLET_ENABLED,
+		Balance:  balance,
 	}
 
 	handler.iws.EnableWalletService(dataWallet)
@@ -52,6 +51,40 @@ func (handler *WalletController) Enable(ctx *gin.Context) {
 		Status: pkg.HTTP_STATUS_SUCCESS,
 		Data: walletResponse.EnableResponse{
 			Wallet: dataWallet,
+		},
+	}
+	ctx.JSON(http.StatusCreated, result)
+}
+
+func (handler *WalletController) View(ctx *gin.Context) {
+	cid, errCid := ctx.Get("customer_xid")
+	if !errCid {
+		result := presenter.Response{
+			Status: pkg.HTTP_STATUS_FAIL,
+			Data: presenter.ErrorResponseMessage{
+				Error: pkg.ErrCustomerXID.Error(),
+			},
+		}
+		ctx.JSON(http.StatusBadRequest, result)
+		return
+	}
+
+	detail, errDetail := handler.iws.ViewWalletService(cid.(string))
+	if errDetail != nil {
+		result := presenter.Response{
+			Status: pkg.HTTP_STATUS_FAIL,
+			Data: presenter.ErrorResponseMessage{
+				Error: errDetail.Message,
+			},
+		}
+		ctx.JSON(http.StatusBadRequest, result)
+		return
+	}
+
+	result := presenter.Response{
+		Status: pkg.HTTP_STATUS_SUCCESS,
+		Data: walletResponse.EnableResponse{
+			Wallet: detail,
 		},
 	}
 	ctx.JSON(http.StatusCreated, result)

@@ -5,6 +5,7 @@ import (
 	repo "julo-test/interfaces/wallet"
 	"julo-test/model/wallet"
 	"julo-test/pkg"
+	"julo-test/presenter"
 )
 
 //Service interface
@@ -36,4 +37,23 @@ func (s *Service) CheckWalletService(cid string) (bool, int) {
 			return true, data.Balance
 		}
 	}
+}
+
+func (s *Service) ViewWalletService(cid string) (wallet.WalletModel, *presenter.Response) {
+	var data wallet.WalletModel
+	check := s.repo.Get(cid)
+	if check == "" {
+		return data, &presenter.Response{
+			Message: pkg.ErrDataNotFound.Error(),
+		}
+	}
+
+	json.Unmarshal([]byte(check), &data)
+	if data.Status == pkg.WALLET_DISABLED {
+		return data, &presenter.Response{
+			Message: pkg.ErrWalletAlreadyDisabled.Error(),
+		}
+	}
+
+	return data, nil
 }
