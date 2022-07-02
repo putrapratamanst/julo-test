@@ -11,8 +11,10 @@ import (
 )
 
 func (handler *AccountController) Init(ctx *gin.Context) {
+	cid := ctx.PostForm("customer_xid")
 	var input account.Init
-	err := ValidateRequest(pkg.BIND_TYPE_JSON, ctx, &input)
+	input.CustomerXID = cid
+	err := ValidateRequest(pkg.BIND_TYPE_PARAM, ctx, &input)
 	if err != nil {
 		result := presenter.Response{
 			Status:  pkg.HTTP_STATUS_FAIL,

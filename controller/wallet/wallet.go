@@ -6,6 +6,7 @@ import (
 	"julo-test/presenter"
 	walletResponse "julo-test/presenter/wallet"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -115,7 +116,10 @@ func (handler *WalletController) Disable(ctx *gin.Context) {
 	}
 
 	var input wallet.DisableModel
-	err := ValidateRequest(pkg.BIND_TYPE_JSON, ctx, &input)
+	isDisabled := ctx.PostForm("is_disabled")
+	cnv, _ := strconv.ParseBool(isDisabled)
+	input.IsDisabled = cnv
+	err := ValidateRequest(pkg.BIND_TYPE_PARAM, ctx, &input)
 	if err != nil {
 		result := presenter.Response{
 			Status:  pkg.HTTP_STATUS_FAIL,
@@ -172,7 +176,11 @@ func (handler *WalletController) Deposit(ctx *gin.Context) {
 	}
 
 	var input wallet.MoneyModel
-	err := ValidateRequest(pkg.BIND_TYPE_JSON, ctx, &input)
+	amount, _ := strconv.Atoi(ctx.PostForm("amount"))
+	refID := ctx.PostForm("reference_id")
+	input.Amount = amount
+	input.ReferenceID = refID
+	err := ValidateRequest(pkg.BIND_TYPE_PARAM, ctx, &input)
 	if err != nil {
 		result := presenter.Response{
 			Status:  pkg.HTTP_STATUS_FAIL,
@@ -255,7 +263,11 @@ func (handler *WalletController) Withdrawal(ctx *gin.Context) {
 	}
 
 	var input wallet.MoneyModel
-	err := ValidateRequest(pkg.BIND_TYPE_JSON, ctx, &input)
+	amount, _ := strconv.Atoi(ctx.PostForm("amount"))
+	refID := ctx.PostForm("reference_id")
+	input.Amount = amount
+	input.ReferenceID = refID
+	err := ValidateRequest(pkg.BIND_TYPE_PARAM, ctx, &input)
 	if err != nil {
 		result := presenter.Response{
 			Status:  pkg.HTTP_STATUS_FAIL,
