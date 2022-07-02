@@ -54,5 +54,40 @@ func (s *Service) ViewWalletService(cid string) (wallet.WalletModel, *presenter.
 
 func (s *Service) DisableWalletService(model wallet.WalletModel) {
 	s.repo.Disable(model)
+}
 
+func (s *Service) DepositWalletService(data wallet.WalletModel, model wallet.DepositModel) {
+	s.repo.Enable(data)
+	s.repo.Deposit(model)
+}
+
+func (s *Service) WithdrawalWalletService(data wallet.WalletModel, model wallet.WithdrawalModel) {
+	s.repo.Enable(data)
+	s.repo.Withdrawal(model)
+}
+
+func (s *Service) GetDepositService(model wallet.DepositModel) (wallet.DepositModel, *presenter.Response) {
+	var data wallet.DepositModel
+	detail := s.repo.GetDeposit(model)
+	if detail == "" {
+		return data, &presenter.Response{
+			Message: pkg.ErrDataNotFound.Error(),
+		}
+	}
+
+	json.Unmarshal([]byte(detail), &data)
+	return data, nil
+}
+
+func (s *Service) GetWithdrawalService(model wallet.WithdrawalModel) (wallet.WithdrawalModel, *presenter.Response) {
+	var data wallet.WithdrawalModel
+	detail := s.repo.GetWithdrawal(model)
+	if detail == "" {
+		return data, &presenter.Response{
+			Message: pkg.ErrDataNotFound.Error(),
+		}
+	}
+
+	json.Unmarshal([]byte(detail), &data)
+	return data, nil
 }

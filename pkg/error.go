@@ -15,4 +15,6 @@ var (
 	ErrForbiddenAccess       = errors.New("You don't have permission to access")
 	ErrGetDataRedis          = errors.New("Fail get data from redis")
 	ErrWalletAlreadyDisabled = errors.New("Disabled")
+	ErrRefID                 = errors.New("Reference ID must be unique")
+	ErrAmountWithdrawTooBig  = errors.New("Amount Withdrawal must be less than Balance")
 )
